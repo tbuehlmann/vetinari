@@ -1,16 +1,16 @@
 module Vetinari
   class CallbackContainer
-    include Celluloid
-
     attr_reader :bot
 
     def initialize(bot)
       @bot = bot
       @callbacks = Hash.new { |hash, key| hash[key] = {} }
+      @mutex = Mutex.new
     end
     
     def add(event, pattern, worker, proc)
-      args = [event, pattern, proc, Actor.current]
+      uuid = SecureRandom.uuid
+      args = [event, pattern, proc, self, uuid]
       worker = Integer(worker)
 
       case
@@ -25,34 +25,50 @@ module Vetinari
         synchronicity = :sync
       end
 
-      @callbacks[callback.event][callback] = synchronicity
+      @mutex.synchronize do
+        @callbacks[callback.event][uuid] = {
+          :callback      => callback,
+          :synchronicity => synchronicity
+        }
+      end
+
       callback
     end
 
-    def remove(callback)
-      if @callbacks.key?(callback.event)
-        deleted = @callbacks[callback.event].delete(callback)
+    def remove(event, uuid)
+      @mutex.synchronize do
+        if @callbacks.key?(event)
+          hash = @callbacks[event].delete(uuid)
 
-        if deleted
-          if @callbacks[callback.event].empty?
-            @callbacks.delete(callback.event)
+          if hash
+            # https://github.com/celluloid/celluloid/issues/197
+            # callback.soft_terminate
+
+            hash[:callback].terminate
+            return true
           end
-
-          return callback
         end
       end
 
-      nil
+      false
     end
 
     def call(env)
-      if @callbacks.key?(env[:type])
-        @callbacks[env[:type]].each do |callback, synchronicity|
-          case synchronicity
+      callbacks = nil
+
+      @mutex.synchronize do
+        if @callbacks.key?(env[:type])
+          callbacks = @callbacks[env[:type]].values.dup
+        end
+      end
+
+      if callbacks
+        callbacks.each do |hash|
+          case hash[:synchronicity]
           when :sync
-            callback.call(env)
+            hash[:callback].call(env)
           when :async
-            callback.async.call(env)
+            hash[:callback].async.call(env)
           end
         end
       end

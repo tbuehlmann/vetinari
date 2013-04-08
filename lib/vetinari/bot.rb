@@ -17,9 +17,7 @@ module Vetinari
     end
 
     def on(event, pattern = //, worker = 0, &block)
-      Future.new do
-        @callbacks.add(event, pattern, worker, block)
-      end
+      @callbacks.add(event, pattern, worker, block)
     end
 
     def connect

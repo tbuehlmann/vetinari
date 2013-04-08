@@ -4,13 +4,13 @@ module Vetinari
 
     attr_reader :event
     attr_writer :container
-    finalizer :finalize
 
-    def initialize(event, pattern, proc, container)
+    def initialize(event, pattern, proc, container, uuid)
       @event = event
       @pattern = pattern
-      @container = container
       @proc = proc
+      @container = container
+      @uuid = uuid
     end
 
     def call(env)
@@ -24,17 +24,11 @@ module Vetinari
     end
 
     def remove
-      # TODO: Works just for worker=1?
-      @container.remove(Actor.current)
-      Actor.current.terminate if Actor.current.alive?
+      @container.remove(@event, @uuid)
     end
 
     def inspect
       "#<Callback event=#{@event.inspect}>" # TODO
-    end
-
-    def finalize
-      remove
     end
 
     private
