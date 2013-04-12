@@ -21,7 +21,7 @@ module Vetinari
       def add_offering(user, filepath, filename)
         server = Server.new(user, filepath, filename, Actor.current)
         @mutex.synchronize { @queue << server }
-        start_sending
+        async.start_sending
         server
       end
 

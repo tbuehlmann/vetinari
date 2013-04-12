@@ -4,6 +4,7 @@ require 'ostruct'
 require 'securerandom'
 require 'thread'
 
+require 'celluloid/autostart'
 require 'celluloid/io'
 
 module Vetinari
@@ -24,6 +25,10 @@ module Vetinari
   module Dcc
     require 'vetinari/dcc/server_manager'
     require 'vetinari/dcc/server'
+
+    module Incoming
+      require 'vetinari/dcc/incoming/file'
+    end
   end
 
   module Logging

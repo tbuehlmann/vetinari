@@ -44,7 +44,11 @@ module Vetinari
             # https://github.com/celluloid/celluloid/issues/197
             # callback.soft_terminate
 
-            hash[:callback].terminate
+            # #terminate is broken for Pools:
+            # https://github.com/celluloid/celluloid/pull/207
+            #
+            # So, don't terminate for now.
+            # hash[:callback].terminate
             return true
           end
         end

@@ -20,6 +20,8 @@ module Vetinari
       @callbacks.add(event, pattern, worker, block)
     end
 
+    exclusive :on
+
     def connect
       @config.loggers.info '-- Starting Vetinari'
       @socket = TCPSocket.open(@config.server, @config.port)
@@ -296,7 +298,18 @@ module Vetinari
         host    = env[:host]
         # TODO: Update existing users with user/host information.
 
-        env[:user] = @users[nick]
+        env[:user] = @users[nick] or User.new(nick, Actor.current)
+      end
+
+      on :query, /\A\001DCC SEND \"?\S+\"? \d+ \d+ \d+\001\z/ do |env|
+        results = env[:message].scan(/\A\001DCC SEND \"?(\S+)\"? (\d+) (\d+) (\d+)\001\z/)
+        filename, ip, port, filesize = results.first
+        filename = filename.delete("/\\")
+        ip       = IPAddr.new(ip.to_i, Socket::AF_INET)
+        port     = Integer(port)
+        filesize = Integer(filesize)
+        file     = Dcc::Incoming::File.new(env[:user], filename, ip, port, filesize, @actor)
+        @callbacks.call(env.merge(:type => :dcc, :file => file))
       end
 
       on :channel_mode do |env|

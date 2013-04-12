@@ -28,7 +28,10 @@ module Vetinari
     end
 
     def inspect
-      "#<Callback event=#{@event.inspect}>" # TODO
+      event   = @event.inspect
+      pattern = @pattern.inspect
+      uuid    = @uuid.inspect
+      "#<Callback event=#{event} pattern=#{pattern} uuid=#{uuid}>"
     end
 
     private
@@ -40,7 +43,6 @@ module Vetinari
       else
         true
       end
-      # TODO
     end
   end
 end
