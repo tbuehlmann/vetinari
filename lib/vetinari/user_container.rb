@@ -2,7 +2,6 @@ module Vetinari
   # The UserList class holds information about users a Thaum is able to see
   # in channels.
   class UserContainer
-    # TODO: Alle methoden in @mutex packen
     attr_reader :users
 
     def initialize
@@ -25,18 +24,22 @@ module Vetinari
 
     # Find a User given the nick.
     def [](user_or_nick)
-      case user_or_nick
-      when User
-        user_or_nick if @users.include?(user_or_nick)
-      when String
-        @users.find do |u|
-          u.nick.downcase == user_or_nick.downcase
+      @mutex.synchronize
+        case user_or_nick
+        when User
+          user_or_nick if @users.include?(user_or_nick)
+        when String
+          @users.find do |u|
+            u.nick.downcase == user_or_nick.downcase
+          end
         end
       end
     end
 
     def has_user?(user)
-      self[user] ? true : false
+      @mutex.synchronize
+        self[user] ? true : false
+      end
     end
 
     def clear
