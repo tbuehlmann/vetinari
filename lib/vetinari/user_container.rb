@@ -24,7 +24,7 @@ module Vetinari
 
     # Find a User given the nick.
     def [](user_or_nick)
-      @mutex.synchronize
+      @mutex.synchronize do
         case user_or_nick
         when User
           user_or_nick if @users.include?(user_or_nick)
@@ -37,7 +37,7 @@ module Vetinari
     end
 
     def has_user?(user)
-      @mutex.synchronize
+      @mutex.synchronize do
         self[user] ? true : false
       end
     end
