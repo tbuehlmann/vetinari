@@ -10,6 +10,7 @@ module Vetinari
       self.real_name          = 'Havelock Vetinari'
       self.verbose            = true
       self.logging            = false
+      self.logger             = nil
       self.reconnect          = true
       self.reconnect_interval = 10
       self.hide_ping_pongs    = true
