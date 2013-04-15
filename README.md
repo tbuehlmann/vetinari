@@ -23,6 +23,8 @@ $ bundle install
 
 ### Usage
 ```ruby
+require 'vetinari'
+
 bot = Vetinari::Bot.new do |config|
   config.server = 'chat.freenode.org'
   config.port   = 6667
