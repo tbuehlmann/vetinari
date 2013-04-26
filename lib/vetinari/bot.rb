@@ -107,8 +107,9 @@ module Vetinari
       end
 
       on :query, /^\001PING \d+\001$/ do |env|
+        # TODO
         time = env[:message].scan(/\d+/)[0]
-        env[:user].notice("\001PING #{time}\001")
+        env[:user].message("\001PING #{time}\001")
       end
 
       on :query, /^\001VERSION\001$/ do |env|

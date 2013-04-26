@@ -15,6 +15,7 @@ module Vetinari
       self.reconnect_interval = 10
       self.hide_ping_pongs    = true
       self.rejoin_after_kick  = false
+      self.password           = false
 
       self.isupport  = ISupport.new
       self.dcc       = OpenStruct.new

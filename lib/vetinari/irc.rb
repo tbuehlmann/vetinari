@@ -1,8 +1,8 @@
 module Vetinari
   module IRC
     def register
-      raw "NICK #{@config.nick}"
       raw "PASS #{@config.password}" if @config.password
+      raw "NICK #{@config.nick}"
       raw "USER #{@config.username} * * :#{@config.real_name}"
     end
 
