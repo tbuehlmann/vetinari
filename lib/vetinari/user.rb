@@ -78,6 +78,8 @@ module Vetinari
       end
     end
 
+    # TODO: ping, version, time methods?
+
     def message(message)
       @bot.raw "PRIVMSG #{@nick} :#{message}"
     end
@@ -87,7 +89,7 @@ module Vetinari
     end
 
     def inspect
-      "#<User nick=#{@nick.inspect}>"
+      "#<User nick=#{@nick}>"
     end
   end
 end
