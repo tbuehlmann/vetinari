@@ -4,6 +4,8 @@ module Vetinari
   #
   # Example:
   # {'ponder' => {:user => #<User nick="Ponder">, :modes => ['v', 'o']}}
+  #
+  # TODO: Actor?
   class Channel
     attr_reader :name, :users, :users_with_modes, :modes, :lists
 

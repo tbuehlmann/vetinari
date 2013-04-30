@@ -10,6 +10,8 @@ module Vetinari
       @callbacks = CallbackContainer.new(Actor.current)
       @users     = UserContainer.new
       @channels  = ChannelContainer.new
+      @socket    = nil
+      @connected = false
 
       setup_channel_and_user_tracking
       setup_default_callbacks
@@ -242,8 +244,8 @@ module Vetinari
           @users.remove(kickee) if remove_user
         end
 
-        env[:kicker] = kicker
-        env[:kickee] = kickee
+        env[:kicker]  = kicker
+        env[:kickee]  = kickee
         env[:channel] = channel
       end
 
@@ -257,9 +259,9 @@ module Vetinari
       end
 
       on :quit do |env|
-        nick    = env.delete(:nick)
-        user    = env.delete(:user)
-        host    = env.delete(:host)
+        nick = env.delete(:nick)
+        user = env.delete(:user)
+        host = env.delete(:host)
 
         # TODO: Update existing users with user/host information.
 

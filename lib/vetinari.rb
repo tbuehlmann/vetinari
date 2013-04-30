@@ -1,7 +1,6 @@
 require 'ipaddr'
 require 'logger'
 require 'ostruct'
-require 'securerandom'
 require 'thread'
 
 require 'celluloid/autostart'

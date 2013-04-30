@@ -9,7 +9,7 @@ module Vetinari
     end
     
     def add(event, pattern, worker, proc)
-      uuid = SecureRandom.uuid
+      uuid = Celluloid.uuid
       args = [event, pattern, proc, self, uuid]
       worker = Integer(worker)
 

@@ -29,4 +29,25 @@ describe Vetinari::Bot do
     bare.should_receive(:raw).with("NOTICE nick :\001TIME #{Time.now.strftime('%a %b %d %H:%M:%S %Y')}\001")
     subject.parse(":nick!user@host PRIVMSG Vetinari :\001TIME\001")
   end
+
+  describe 'rejoin channel after kick' do
+    let(:channel) { subject.channels['#mended_drum'] }
+
+    before(:each) do
+      subject.config.rejoin_after_kick = true
+      subject.parse(':Vetinari!foo@bar JOIN #mended_drum')
+      subject.parse(':TheLibrarian!foo@bar JOIN #mended_drum')
+    end
+
+    it 'without a channel key' do
+      channel.should_receive(:join)
+      subject.parse(':TheLibrarian!foo@bar KICK #mended_drum Vetinari :foo')
+    end
+
+    it 'with a channel key' do
+      channel.should_receive(:join).with('thaum')
+      subject.parse(':Vetinari!foo@bar MODE #mended_drum +k thaum')
+      subject.parse(':TheLibrarian!foo@bar KICK #mended_drum Vetinari :foo')
+    end
+  end
 end

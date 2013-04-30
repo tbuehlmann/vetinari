@@ -1,4 +1,5 @@
 module Vetinari
+  # TODO: Actor?
   class User
     attr_reader :nick
     
