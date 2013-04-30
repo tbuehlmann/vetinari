@@ -16,12 +16,12 @@ module Vetinari
           @bot        = bot
           @mutex      = Mutex.new
           
-          set_state :pending
+          self.state = :pending
         end
 
         def accept(directory = '~/Downloads/', resume = false)
           if @state == :pending
-            set_state :accepted
+            self.state = :accepted
             directory = ::File.expand_path(directory)
             @filepath = ::File.join(directory, @filename)
 
@@ -38,11 +38,11 @@ module Vetinari
         end
 
         def resume_accepted(position)
-          set_state :resume_accepted
+          self.state = :resume_accepted
           download(position)
         end
 
-        def set_state(state)
+        def state=(state)
           old_state = @state
           @state = state
           publish('vetinari.dcc.incoming.file', Actor.current, old_state, @state)
@@ -51,13 +51,13 @@ module Vetinari
         private
 
         def download(position = 0)
-          set_state :connecting
+          self.state = :connecting
 
           begin
             @socket = TCPSocket.new(@ip.to_s, @port)
-            set_state :connected
+            self.state = :connected
           rescue Errno::ECONNREFUSED
-            set_state :failed
+            self.state = :failed
             return
           end
 
@@ -65,7 +65,7 @@ module Vetinari
 
           begin
             ::File.open(@filepath, file_mode) do |file|
-              set_state :downloading
+              self.state = :downloading
 
               while buffer = @socket.readpartial(8192)
                 position += buffer.bytesize
@@ -74,9 +74,9 @@ module Vetinari
               end
             end
 
-            set_state :finished
+            self.state = :finished
           rescue EOFError
-            set_state :aborted
+            self.state = :aborted
           ensure
             @socket.close
           end
@@ -89,7 +89,7 @@ module Vetinari
         end
 
         def resume_transfer
-          set_state :resuming
+          self.state = :resuming
           filename = Regexp.escape(@filename)
           position = ::File.size(@filepath)
           file = Actor.current
@@ -104,7 +104,7 @@ module Vetinari
           after(30) do
             if @state == :resuming
               cb.remove
-              file.set_state :resume_not_accepted
+              file.state = :resume_not_accepted
             end
           end
         end
