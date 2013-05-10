@@ -12,6 +12,7 @@ module Vetinari
       @channels  = ChannelContainer.new
       @socket    = nil
       @connected = false
+      @user      = nil
 
       setup_channel_and_user_tracking
       setup_default_callbacks
@@ -23,6 +24,7 @@ module Vetinari
     end
 
     exclusive :on
+    execute_block_on_receiver :on
 
     def connect
       @config.loggers.info '-- Starting Vetinari'
