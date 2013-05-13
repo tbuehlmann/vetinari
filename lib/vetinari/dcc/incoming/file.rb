@@ -4,8 +4,7 @@ module Vetinari
       class File
         include Celluloid::IO, Celluloid::Notifications
 
-        attr_reader :user, :filename, :ip, :port
-        attr_reader :filesize, :state
+        attr_reader :user, :filename, :ip, :port, :filesize, :state
 
         def initialize(user, filename, ip, port, filesize, bot)
           @user       = user
