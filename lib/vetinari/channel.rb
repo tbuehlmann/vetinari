@@ -221,6 +221,10 @@ module Vetinari
       "#<Channel name=#{@name.inspect}>"
     end
 
+    def to_s
+      @name
+    end
+
     private
 
     def set_channel_mode(mode, param)

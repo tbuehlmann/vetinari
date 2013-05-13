@@ -1,11 +1,20 @@
 module Vetinari
   # TODO: Actor?
   class User
-    attr_reader :nick
+    attr_reader :nick, :user, :host, :online, :observed
     
     def initialize(nick, bot)
-      @nick = nick
+      # TODO
       @bot = bot
+      @nick = nick
+      @user = nil
+      @host = nil
+      
+      @online   = nil
+      @observed = false
+
+      @channels = Set.new
+      @channels_with_modes = {}
     end
 
     # Updates the properties of an user.
@@ -61,7 +70,6 @@ module Vetinari
       end
     end
 
-    # TODO
     def bot?
       self == @bot.user
     end
@@ -91,6 +99,10 @@ module Vetinari
 
     def inspect
       "#<User nick=#{@nick}>"
+    end
+
+    def to_s
+      @nick
     end
   end
 end
