@@ -1,4 +1,4 @@
-# Vetinari
+# Vetinari [![Gem Version](https://badge.fury.io/rb/vetinari.png)](http://badge.fury.io/rb/vetinari)
 Vetinari is a Domain Specific Language for writing IRC Bots using the [Celluloid::IO](https://github.com/celluloid/celluloid-io "Celluloid::IO") library.
 
 ## Requirements
