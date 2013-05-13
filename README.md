@@ -3,7 +3,7 @@ Vetinari is a Domain Specific Language for writing IRC Bots using the [Celluloid
 
 ## Requirements
 - Ruby >= 1.9.2
-- Celluloid::IO ~> 0.13
+- Celluloid::IO ~> 0.14
 
 ## Wiki
 Detailed information about using Vetinari can be found in the [Project Wiki](https://github.com/tbuehlmann/vetinari/wiki).
@@ -11,14 +11,8 @@ Detailed information about using Vetinari can be found in the [Project Wiki](htt
 ## Quick Setup
 
 ### Installation
-Add this line to your application's Gemfile:
-```ruby
-gem 'vetinari', :github => 'tbuehlmann/vetinari'
-```
-
-Then execute:
 ```sh
-$ bundle install
+$ gem install vetinari
 ```
 
 ### Usage
