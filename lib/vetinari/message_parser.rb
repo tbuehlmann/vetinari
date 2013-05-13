@@ -21,7 +21,7 @@ module Vetinari
       when /^:(\S+)!(\S+)@(\S+) MODE ((?:#{chantypes})\S+) ([+-]\S+)/
         {:type => :channel_mode, :nick => $1, :user => $2, :host => $3, :channel => $4, :modes => $5, :params => $'.lstrip}
       when /^:(\S+)!(\S+)@(\S+) NICK :/
-        {:type => :nickchange, :nick => $1, :user => $2, :host => $3, :new_nick => $'}
+        {:type => :nick_change, :nick => $1, :user => $2, :host => $3, :new_nick => $'}
       when /^:(\S+)!(\S+)@(\S+) KICK (\S+) (\S+) :/
         {:type => :kick, :nick => $1, :user => $2, :host => $3, :channel => $4, :kickee => $5, :message => $'}
       when /^:(\S+)!(\S+)@(\S+) TOPIC (\S+) :/
