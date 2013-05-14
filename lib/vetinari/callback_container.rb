@@ -8,10 +8,10 @@ module Vetinari
       @mutex = Mutex.new
     end
     
-    def add(event, pattern, worker, proc)
+    def add(event, options, proc)
+      worker = Integer(options.delete(:worker) || 0)
       uuid = Celluloid.uuid
-      args = [event, pattern, proc, self, uuid]
-      worker = Integer(worker)
+      args = [event, options, proc, self, uuid]
 
       case
       when worker == 1

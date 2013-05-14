@@ -19,8 +19,8 @@ module Vetinari
       setup_dcc
     end
 
-    def on(event, pattern = //, worker = 0, &block)
-      @callbacks.add(event, pattern, worker, block)
+    def on(event, options = {}, &block)
+      @callbacks.add(event, options, block)
     end
 
     exclusive :on
@@ -111,16 +111,16 @@ module Vetinari
       end
 
       # User ping request.
-      on :query, /^\001PING \d+\001$/ do |env|
+      on :query, :pattern => /^\001PING \d+\001$/ do |env|
         time = env[:message].scan(/\d+/)[0]
         env[:user].notice("\001PING #{time}\001")
       end
 
-      on :query, /^\001VERSION\001$/ do |env|
+      on :query, :pattern => /^\001VERSION\001$/ do |env|
         env[:user].notice("\001VERSION Vetinari #{Vetinari::VERSION} (https://github.com/tbuehlmann/vetinari)")
       end
 
-      on :query, /^\001TIME\001$/ do |env|
+      on :query, :pattern => /^\001TIME\001$/ do |env|
         env[:user].notice("\001TIME #{Time.now.strftime('%a %b %d %H:%M:%S %Y')}\001")
       end
     end
@@ -306,7 +306,7 @@ module Vetinari
         env[:user] = @users[nick] || User.new(nick, @actor)
       end
 
-      on :query, /\A\001DCC SEND \"?\S+\"? \d+ \d+ \d+\001\z/ do |env|
+      on :query, :pattern => /\A\001DCC SEND \"?\S+\"? \d+ \d+ \d+\001\z/ do |env|
         results = env[:message].scan(/\A\001DCC SEND \"?(\S+)\"? (\d+) (\d+) (\d+)\001\z/)
         filename, ip, port, filesize = results.first
         filename = filename.delete("/\\")
@@ -335,6 +335,15 @@ module Vetinari
         env[:channel_modes].each do |mode|
           channel.set_mode(mode, @config.isupport)
         end
+      end
+
+      on :nick_change do |env|
+        # TODO: Update existing users with user/host information.
+        env.delete(:user)
+        env.delete(:host)
+        env[:old_nick] = env.delete(:nick)
+        env[:user] = @users[env[:old_nick]]
+        env[:user].renamed_to(env.delete(:new_nick))
       end
 
       # Response to MODE command, giving back the channel modes.

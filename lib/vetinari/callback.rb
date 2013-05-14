@@ -5,9 +5,9 @@ module Vetinari
     attr_reader :event
     attr_writer :container
 
-    def initialize(event, pattern, proc, container, uuid)
+    def initialize(event, options, proc, container, uuid)
       @event = event
-      @pattern = pattern
+      @options = options
       @proc = proc
       @container = container
       @uuid = uuid
@@ -29,9 +29,9 @@ module Vetinari
 
     def inspect
       event   = @event.inspect
-      pattern = @pattern.inspect
+      options = @options.inspect
       uuid    = @uuid.inspect
-      "#<Callback event=#{event} pattern=#{pattern} uuid=#{uuid}>"
+      "#<Callback event=#{event} options=#{options} uuid=#{uuid}>"
     end
 
     private
@@ -39,7 +39,11 @@ module Vetinari
     def matching?(env)
       case @event
       when :channel, :query
-        env[:message] =~ @pattern
+        if @options[:pattern]
+          env[:message] =~ @options[:pattern] ? true : false
+        else
+          true
+        end
       else
         true
       end

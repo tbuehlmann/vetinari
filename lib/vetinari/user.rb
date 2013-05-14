@@ -97,6 +97,10 @@ module Vetinari
       @bot.raw "NOTICE #{@nick} :#{message}"
     end
 
+    def renamed_to(nick)
+      @nick = nick
+    end
+
     def inspect
       "#<User nick=#{@nick}>"
     end

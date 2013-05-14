@@ -50,4 +50,27 @@ describe Vetinari::Bot do
       subject.parse(':TheLibrarian!foo@bar KICK #mended_drum Vetinari :foo')
     end
   end
+
+  describe 'on :nick_change' do
+    before(:each) do
+      subject.parse(':Vetinari!foo@bar JOIN #mended_drum')
+      subject.parse(':Ridcully!foo@bar JOIN #mended_drum')
+    end
+
+    it 'works' do
+      user = subject.users['Ridcully']
+      subject.parse(':Ridcully!foo@bar NICK :Twoflower')
+      expect(user.nick).to eq('Twoflower')
+    end
+
+    it 'sets the old nick properly' do
+      subject.on :nick_change do |env|
+        expect(env[:old_nick]).to eq('Ridcully')
+        @called = true
+      end
+
+      subject.parse(':Ridcully!foo@bar NICK :Twoflower')
+      expect(@called).to be_true
+    end
+  end
 end

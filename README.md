@@ -29,7 +29,7 @@ bot.on(:connect) do
   bot.join '#vetinari'
 end
 
-bot.on(:channel, /foo/) do |env|
+bot.on(:channel, :pattern => /foo/) do |env|
   env[:channel].message('bar')
 end
 
