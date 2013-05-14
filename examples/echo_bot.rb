@@ -10,14 +10,14 @@ echo_bot = Vetinari::Bot.new do |config|
 end
 
 echo_bot.on :connect do
-  echo_bot.join '#vetinari'
+  echo_bot.join('#vetinari')
 end
 
-echo_bot.on :channel, /\Aquit!\z/ do |env|
+echo_bot.on(:channel, :pattern => /\Aquit!\z/) do |env|
   echo_bot.quit
 end
 
-echo_bot.on :channel, //, 1 do |env|
+echo_bot.on(:channel, :pattern => //) do |env|
   env[:channel].message(env[:message])
 end
 
