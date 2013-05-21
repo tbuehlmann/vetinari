@@ -33,10 +33,8 @@ module Vetinari
     end
 
     def join(channel_name, key = nil)
-      unless @channels.has_channel?(channel_name)
-        channel = Channel.new(channel_name, @actor)
-        channel.join key
-      end
+      channel = Channel.new(channel_name, @actor)
+      channel.join(key)
     end
   end
 end

@@ -27,6 +27,10 @@ module Vetinari
       @container.remove(@event, @uuid)
     end
 
+    def remove_and_terminate
+      @container.remove(@event, @uuid, true)
+    end
+
     def inspect
       event   = @event.inspect
       options = @options.inspect

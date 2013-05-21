@@ -7,6 +7,8 @@ module Vetinari
   #
   # TODO: Actor?
   class Channel
+    include Celluloid
+
     attr_reader :name, :users, :users_with_modes, :modes, :lists
 
     def initialize(name, bot)
@@ -95,11 +97,50 @@ module Vetinari
     end
 
     def join(key = nil)
+      if @bot.channels.has_channel?(@name)
+        return Future.new { :already_joined }
+      end
+
+      actor = Actor.current
+      callbacks = Set.new
+
+      callbacks << @bot.on(:join) do |env|
+        if env[:channel].name == @name
+          actor.signal(:join, :joined)
+          callbacks.each { |cb| cb.remove_and_terminate }
+        end
+      end
+
+      raw_messages = {
+        475 => :locked,
+        471 => :full,
+        474 => :banned,
+        473 => :invite_only
+      }
+
+      raw_messages.each do |raw, msg|
+        callbacks << @bot.on(raw) do |env|
+          channel_name = env[:params].split(' ')[1]
+
+          if channel_name == @name
+            actor.signal(:join, msg)
+            callbacks.each { |cb| cb.remove_and_terminate }
+          end
+        end
+      end
+
+      after(5) do
+        actor.signal(:join, :timeout)
+        callbacks.each { |cb| cb.remove_and_terminate }
+      end
+
       if key
         @bot.raw "JOIN #{@name} #{key}"
       else
         @bot.raw "JOIN #{@name}"
       end
+
+      Future.new { actor.wait(:join) }
     end
 
     def part(message = nil)

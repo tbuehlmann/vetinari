@@ -35,12 +35,16 @@ module Vetinari
       callback
     end
 
-    def remove(event, uuid)
+    def remove(event, uuid, terminate = false)
       @mutex.synchronize do
         if @callbacks.key?(event)
           hash = @callbacks[event].delete(uuid)
 
           if hash
+            if terminate && hash[:callback].alive?
+              hash[:callback].async.terminate
+            end
+
             # https://github.com/celluloid/celluloid/issues/197
             # callback.soft_terminate
 
