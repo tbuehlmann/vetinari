@@ -346,6 +346,14 @@ module Vetinari
         env[:user].renamed_to(env.delete(:new_nick))
       end
 
+      on :topic do |env|
+        # TODO: Update existing users with user/host information.
+        env.delete(:user)
+        env.delete(:host)
+        env[:channel] = @channels[env.delete(:channel)]
+        env[:user] = @users[env.delete(:nick)]
+      end
+
       # Response to MODE command, giving back the channel modes.
       on 324 do |env|
         split = env[:params].split(/ /)

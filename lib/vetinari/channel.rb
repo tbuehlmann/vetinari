@@ -4,8 +4,6 @@ module Vetinari
   #
   # Example:
   # {'ponder' => {:user => #<User nick="Ponder">, :modes => ['v', 'o']}}
-  #
-  # TODO: Actor?
   class Channel
     include Celluloid
 
@@ -101,12 +99,12 @@ module Vetinari
         return Future.new { :already_joined }
       end
 
-      actor = Actor.current
+      condition = Celluloid::Condition.new
       callbacks = Set.new
 
       callbacks << @bot.on(:join) do |env|
         if env[:channel].name == @name
-          actor.signal(:join, :joined)
+          condition.signal :joined
           callbacks.each { |cb| cb.remove_and_terminate }
         end
       end
@@ -123,14 +121,14 @@ module Vetinari
           channel_name = env[:params].split(' ')[1]
 
           if channel_name == @name
-            actor.signal(:join, msg)
+            condition.signal msg
             callbacks.each { |cb| cb.remove_and_terminate }
           end
         end
       end
 
       after(5) do
-        actor.signal(:join, :timeout)
+        condition.signal :timeout
         callbacks.each { |cb| cb.remove_and_terminate }
       end
 
@@ -140,7 +138,7 @@ module Vetinari
         @bot.raw "JOIN #{@name}"
       end
 
-      Future.new { actor.wait(:join) }
+      Future.new { condition.wait }
     end
 
     def part(message = nil)
