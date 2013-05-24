@@ -36,5 +36,17 @@ module Vetinari
       channel = Channel.new(channel_name, @actor)
       channel.join(key)
     end
+
+    def message(receiver, message)
+      channel = @config.isupport['CHANTYPES'].any? do |chantype|
+        receiver.start_with?(chantype)
+      end
+
+      if channel
+        Channel.new(receiver, @actor).message(message)
+      else
+        User.new(receiver, @actor).message(message)
+      end
+    end
   end
 end
