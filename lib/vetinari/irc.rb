@@ -7,7 +7,41 @@ module Vetinari
     end
 
     def rename(nick)
+      if nick.length > @config.isupport['NICKLEN']
+        nick = nick.slice(0, @config.isupport['NICKLEN'])
+      end
+
+      return Celluloid::Future.new { nick } if @user.nick == nick
+
+      condition = Celluloid::Condition.new
+      callbacks = Set.new
+
+      callbacks << on(:nick_change) do |env|
+        if env[:user].bot?
+          condition.signal env[:user].nick
+          callbacks.each { |cb| cb.remove_and_terminate }
+        end
+      end
+
+      raw_messages = {
+        432 => :erroneous_nickname,
+        433 => :nickname_in_use
+      }
+
+      raw_messages.each do |raw, msg|
+        callbacks << on(raw) do |env|
+          condition.signal(msg)
+          callbacks.each { |cb| cb.remove_and_terminate }
+        end
+      end
+
+      after(5) do
+        condition.signal(:timeout)
+        callbacks.each { |cb| cb.remove_and_terminate }
+      end
+
       raw "NICK :#{nick}"
+      Celluloid::Future.new { condition.wait }
     end
 
     def away(message = nil)
