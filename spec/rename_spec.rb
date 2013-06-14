@@ -4,6 +4,8 @@ describe 'Bot#rename' do
   subject { Vetinari::Bot.new { |c| c.verbose = false } }
 
   before(:each) do
+    Celluloid.shutdown
+    Celluloid.boot
     subject.parse(':server 001 Vetinari :Welcome message')
     subject.parse(':server 376 Vetinari :End of /MOTD command.')
     subject.parse(':server 005 Vetinari NICKLEN=10')

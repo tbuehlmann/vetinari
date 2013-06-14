@@ -4,6 +4,8 @@ module Vetinari
 
     attr_reader :channels
 
+    finalizer :finalize
+
     exclusive
 
     def initialize
@@ -69,6 +71,10 @@ module Vetinari
       end
 
       users
+    end
+
+    def finalize
+      @channels.each(&:terminate)
     end
   end
 end

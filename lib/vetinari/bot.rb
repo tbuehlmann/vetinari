@@ -4,6 +4,8 @@ module Vetinari
 
     attr_reader :config, :users, :user, :channels, :server_manager, :callbacks
 
+    finalizer :finalize
+
     def initialize(&block)
       @actor     = Actor.current
       @config    = Configuration.new(&block)
@@ -73,6 +75,17 @@ module Vetinari
         env = MessageParser.parse(message, @config.isupport['CHANTYPES'])
         @callbacks.call(env)
       end
+    end
+
+    def finalize
+      if connected?
+        quit
+        @socket.close rescue nil
+      end
+
+      @callbacks.terminate_callbacks
+      @users.terminate
+      @channels.terminate
     end
 
     private

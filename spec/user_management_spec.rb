@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe 'User Management' do
   subject { Vetinari::Bot.new { |c| c.verbose = false } }
+  before(:each) do
+    Celluloid.shutdown
+    Celluloid.boot
+  end
 
   context 'Connecting to the server' do
     it 'adds itself to the user_list when connected to the server' do

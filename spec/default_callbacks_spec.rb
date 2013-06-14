@@ -5,6 +5,8 @@ describe Vetinari::Bot do
   let(:bare) { subject.bare_object }
 
   before(:each) do
+    Celluloid.shutdown
+    Celluloid.boot
     subject.parse(':server 001 Vetinari :Welcome message')
     subject.parse(':server 376 Vetinari :End of /MOTD command.')
   end

@@ -3,6 +3,10 @@ require 'spec_helper'
 describe 'Callback' do
   subject { Vetinari::Bot.new { |c| c.verbose = false } }
   let(:callbacks) { subject.callbacks.instance_variable_get('@callbacks') }
+  before(:each) do
+    Celluloid.shutdown
+    Celluloid.boot
+  end
 
   it 'is added correctly' do
     expect(callbacks[:channel]).to have(1).callback

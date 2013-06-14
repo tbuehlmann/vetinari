@@ -85,5 +85,13 @@ module Vetinari
     def inspect
       "#<CallbackContainer bot=#{@bot.inspect}>"
     end
+
+    def terminate_callbacks
+      @callbacks.each do |event, hash|
+        hash.each do |uuid, _hash|
+          _hash[:callback].terminate
+        end
+      end
+    end
   end
 end
