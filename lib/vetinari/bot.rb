@@ -86,6 +86,10 @@ module Vetinari
       @callbacks.terminate_callbacks
       @users.terminate
       @channels.terminate
+
+      links.each do |actor|
+        actor.terminate if actor.alive?
+      end
     end
 
     private

@@ -19,7 +19,7 @@ module Vetinari
       callbacks << on(:nick_change) do |env|
         if env[:user].bot?
           condition.signal env[:user].nick
-          callbacks.each { |cb| cb.remove_and_terminate }
+          callbacks.each { |cb| cb.remove_and_terminate if cb.alive? }
         end
       end
 
@@ -31,13 +31,13 @@ module Vetinari
       raw_messages.each do |raw, msg|
         callbacks << on(raw) do |env|
           condition.signal(msg)
-          callbacks.each { |cb| cb.remove_and_terminate }
+          callbacks.each { |cb| cb.remove_and_terminate if cb.alive? }
         end
       end
 
       after(5) do
         condition.signal(:timeout)
-        callbacks.each { |cb| cb.remove_and_terminate }
+        callbacks.each { |cb| cb.remove_and_terminate if cb.alive? }
       end
 
       raw "NICK :#{nick}"
