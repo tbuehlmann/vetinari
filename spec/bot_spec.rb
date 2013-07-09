@@ -27,4 +27,17 @@ describe Vetinari::Bot.new do
       subject.terminate
     end.to_not change { Celluloid::Actor.all.size }
   end
+
+  it 'should not die if a linked channel dies' do
+    channel = Vetinari::Channel.new('#mended_drum', subject)
+
+    def (channel.bare_object).crash
+      raise 'boom'
+    end
+
+    expect(subject.links).to include(channel)
+    channel.crash rescue nil
+    expect(channel).to_not be_alive
+    expect(subject).to be_alive
+  end
 end

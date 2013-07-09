@@ -5,6 +5,7 @@ module Vetinari
     attr_reader :config, :users, :user, :channels, :server_manager, :callbacks
 
     finalizer :finalize
+    trap_exit :dont_die
 
     def initialize(&block)
       @actor     = Actor.current
@@ -90,6 +91,10 @@ module Vetinari
       links.each do |actor|
         actor.terminate if actor.alive?
       end
+    end
+
+    def dont_die(actor)
+      # nothing!
     end
 
     private
