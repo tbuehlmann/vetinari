@@ -107,7 +107,7 @@ module Vetinari
       callbacks << @bot.on(:join) do |env|
         if env[:channel].name == @name
           condition.signal :joined
-          callbacks.each { |cb| cb.remove_and_terminate if cb.alive? }
+          callbacks.each { |cb| cb.async.remove_and_terminate if cb.alive? }
         end
       end
 
@@ -124,14 +124,14 @@ module Vetinari
 
           if channel_name == @name
             condition.signal msg
-            callbacks.each { |cb| cb.remove_and_terminate if cb.alive? }
+            callbacks.each { |cb| cb.async.remove_and_terminate if cb.alive? }
           end
         end
       end
 
       after(5) do
         condition.signal :timeout
-        callbacks.each { |cb| cb.remove_and_terminate if cb.alive? }
+        callbacks.each { |cb| cb.async.remove_and_terminate if cb.alive? }
       end
 
       if key

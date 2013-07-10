@@ -89,7 +89,8 @@ module Vetinari
     def terminate_callbacks
       @callbacks.each do |event, hash|
         hash.each do |uuid, _hash|
-          _hash[:callback].terminate
+          actor = _hash[:callback]
+          actor.terminate if actor.alive?
         end
       end
     end
